@@ -52,17 +52,32 @@ function flushMetrics() {
   backendEvents.once('flush', function clear_metrics(ts, metrics) {
     // Clear the counters
     for (key in metrics.counters) {
-      metrics.counters[key] = 0;
+      if (metrics.counters[key] == 0) {
+        // delete idle counters
+        delete metrics.counters[key];
+      } else {
+        metrics.counters[key] = 0;
+      }
     }
 
     // Clear the timers
     for (key in metrics.timers) {
-      metrics.timers[key] = [];
+      if (metrics.timers[key].length == 0) {
+        // delete idle timers
+        delete metrics.timers[key];
+      } else {
+        metrics.timers[key] = [];
+      }
     }
 
     // Clear the sets
     for (key in metrics.sets) {
       metrics.sets[key] = new set.Set();
+    }
+
+    // Clear the gauges
+    for (key in metrics.gauges) {
+      delete metrics.gauges[key];
     }
   });
 
